@@ -207,7 +207,8 @@ Kelas   : PBP A
     ```
 </details>
 
-## Tugas 8
+<details>
+<summary><b> Tugas 8 <b></summary>
 
 ### Jelaskan perbedaan antara Navigator.push() dan Navigator.pushReplacement(), disertai dengan contoh mengenai penggunaan kedua metode tersebut yang tepat!
 * Navigator.push()
@@ -561,3 +562,112 @@ Clean architecture adalah pengembangan aplikasi agar lebih terstruktur dengan pe
     ```
 
 #### Lakukan *Refactoring File*
+</details>
+
+## Tugas 9
+
+### Apakah bisa kita melakukan pengambilan data JSON tanpa membuat model terlebih dahulu? Jika iya, apakah hal tersebut lebih baik daripada membuat model sebelum melakukan pengambilan data JSON?
+* Ya, pengambilan data JSON tanpa membuat model terlebih dahulu dapat dilakukan. Yaitu dengan menggunakan variabel yang menyimpan sebuah struktur data dictionary yang berisikan data.
+* Tergantung pada kompleksitas data dan kebutuhan proyek. Jika datanya sederhana, dapat langsung mengambilnya tanpa model. Namun, untuk data kompleks, membuat model dapat membantu dalam pengelolaan dan pemrosesan data dengan lebih terstruktur.
+
+### Jelaskan fungsi dari CookieRequest dan jelaskan mengapa instance CookieRequest perlu untuk dibagikan ke semua komponen di aplikasi Flutter.
+* `CookieRequest` dalam konteks aplikasi Flutter merupakan kelas atau objek yang bertanggung jawab untuk mengelola permintaan HTTP yang melibatkan penggunaan cookie. Instance dari `CookieRequest` perlu dibagikan ke semua komponen dalam aplikasi Flutter untuk memastikan konsistensi dan pengelolaan yang efisien terhadap cookie dalam seluruh aplikasi. Dengan berbagi instance, setiap komponen dapat mengakses dan memodifikasi data cookie yang sama tanpa perlu membuat instance baru. 
+
+### Jelaskan mekanisme pengambilan data dari JSON hingga dapat ditampilkan pada Flutter.
+* Buat model kustom yang menyesuaikan dengan data JSON dengan memanfaatkan website Quicktype.
+* Menambahkan dependensi HTTP yaitu dengan menambahkan *package* `http` dan menambahkan kode `<uses-permission android:name="android.permission.INTERNET" />` pada file `android/app/src/main/AndroidManifest.xml` untuk memberi akses Internet pada aplikasi.
+* Melakukan fetch data dari Django dengan menambahkan kode dibawah ini.
+    ```dart
+    Future<List<Product>> fetchProduct() async {
+        var url = Uri.parse(
+            'http://127.0.0.1:8000/json/');
+        var response = await http.get(
+            url,
+            headers: {"Content-Type": "application/json"},
+        );
+
+        // melakukan decode response menjadi bentuk json
+        var data = jsonDecode(utf8.decode(response.bodyBytes));
+
+        // melakukan konversi data json menjadi object Product
+        List<Product> list_product = [];
+        for (var d in data) {
+            if (d != null) {
+                list_product.add(Product.fromJson(d));
+            }
+        }
+        return list_product;
+    }
+    ```
+    * Kode tersebut mendefinisikan URL server Django yang akan di akses untuk mendapatkan data produk dalam format JSON.
+    * Mengirim permintaan HTTP GET ke server dengan URL yang telah ditentukan.
+    * Setelah menerima respons dari server, kode melakukan decode terhadap data JSON yang diterima.
+    * Melakukan iterasi melalui data JSON yang telah didekode dan mengonversinya menjadi objek Dart dari tipe `Product`. 
+* Menampilkan data pada daftar produk. Penggunaan `FutureBuilder` memberikan tampilan responsif dengan menangani proses *asynchronous* saat mengambil data. Jika data belum tersedia, ditampilkan `CircularProgressIndicator`, dan jika tidak ada data produk, muncul pesan informasi. Jika data sudah tersedia, daftar produk ditampilkan dalam `ListView.builder`, menampilkan informasi seperti nama, jumlah, dan deskripsi. 
+
+### Jelaskan mekanisme autentikasi dari input data akun pada Flutter ke Django hingga selesainya proses autentikasi oleh Django dan tampilnya menu pada Flutter.
+* Pengguna memasukkan *username* dan *password* pada `loginPage` Flutter
+* Aplikasi Flutter mengirim permintaan HTTP (POST) dengan kredensial ke server Django.
+* Django memvalidasi kredensial pengguna dengan data yang disimpan menggunakan `user = authenticate(username=username, password=password)`.
+* Dari hasil autentikasi, dilihat apakah data sesuai atau tidak. Jika berhasil, maka akan diarahkan ke laman `MyHomePage`.
+
+### Sebutkan seluruh widget yang kamu pakai pada tugas ini dan jelaskan fungsinya masing-masing.
+*  `Scaffold`: Mengatur tata letak dasar halaman, termasuk AppBar, Drawer, dan body.
+* `FutureBuilder`: Mengambil data produk secara asynchronous dan membuat UI berdasarkan status hasil future, seperti menampilkan loading indicator atau data *item*.
+* `ListView.builder`: Menampilkan daftar produk dalam bentuk daftar gulir, membangun daftar *item* secara dinamis sesuai dengan data yang diterima.
+* `SizedBox`: Memberikan jarak vertikal antara elemen-elemen teks dalam tata letak *item*.
+* `Container`: Mengelompokkan dan menyusun informasi *item* dalam tata letak yang sesuai.
+* `Column`: Menyusun teks-teks *item* secara vertikal dalam tata letak.
+
+### Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step! 
+
+#### Setup Autentikasi pada Django untuk Flutter
+* Buat `django-app` bernama `authentication` pada project Django. Jalankan `python manage.py startapp authentication`.
+* Tambahkan `authentication` ke `INSTALLED_APPS` pada main project settings.py aplikasi Django.
+* Jalankan perintah `pip install django-cors-headers` untuk menginstal *library* yang dibutuhkan.
+* Tambahkan `corsheaders` ke `INSTALLED_APPS` pada main project `settings.py`.
+* Tambahkan `corsheaders.middleware.CorsMiddleware` pada main project `settings.py`.
+* Tambahkan variabel berikut pada `setting.py`.
+    ```python
+    CORS_ALLOW_ALL_ORIGINS = True
+    CORS_ALLOW_CREDENTIALS = True
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SAMESITE = 'None'
+    SESSION_COOKIE_SAMESITE = 'None'
+    ```
+* Buat metode *view* untuk *login* pada `authentication/views.py`.
+* Tambahkan URL *routing* untuk fungsi login tersebut.
+
+#### Integrasi Sistem Autentikasi pada Flutter
+* Instal package yang telah disediakan dengan menjalankan `flutter pub add provider` dan `flutter pub add pbp_django_auth` pada terminal.
+* Memodifikasi `main.dart` untuk membuat objek `Provider` baru untuk membagikan *instance* `CookieRequest` dengan semua komponen aplikasi.
+* Buat `login.dart` sebagai laman untuk *login* dan mengubah arahan widget pada `main.dart` dari `MyHomePage()` ke `LoginPage()`.
+
+#### Membuat model kustom dan fetch data dari Django
+* Buatlah seperti arahan pada poin pertanyaan ke-3.
+
+#### Integrasi Form Flutter Dengan Layanan Django
+* Buat sebuah fungsi view pada main/views.py aplikasi Django untuk membuat produk melalui Flutter.
+    ```python
+    @csrf_exempt
+    def create_product_flutter(request):
+        if request.method == 'POST':
+            
+            data = json.loads(request.body)
+
+            new_product = Product.objects.create(
+                user = request.user,
+                name = data["name"],
+                price = int(data["price"]),
+                description = data["description"]
+            )
+
+            new_product.save()
+
+            return JsonResponse({"status": "success"}, status=200)
+        else:
+            return JsonResponse({"status": "error"}, status=401)
+    ```
+* Tambahkan *path* untuk *routing* fungsi tersebut.
+* Hubungkan halaman `shoplist_form.dart` dengan `CookieRequest` serta melengkap impor *package*.

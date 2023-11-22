@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:harvest_haven/screens/menu.dart';
 import 'package:harvest_haven/screens/shoplist_form.dart';
+import 'package:harvest_haven/screens/list_product.dart';
 
 class LeftDrawer extends StatelessWidget {
   const LeftDrawer({super.key});
@@ -17,7 +18,7 @@ class LeftDrawer extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  'Shopping List',
+                  'HarvestHaven',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 30,
@@ -59,6 +60,17 @@ class LeftDrawer extends StatelessWidget {
                 MaterialPageRoute(
                   builder: (context) => ShopFormPage(),
                 )
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.shopping_basket),
+            title: const Text('Daftar Produk'),
+            onTap: () {
+                // Route menu ke halaman produk
+                Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ProductPage()),
               );
             },
           ),

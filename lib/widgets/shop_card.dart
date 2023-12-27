@@ -8,8 +8,9 @@ import 'package:harvest_haven/screens/login.dart';
 class ShopItem {
   final String name;
   final IconData icon;
+  final int number;
 
-  ShopItem(this.name, this.icon);
+  ShopItem(this.name, this.icon, this.number);
 }
 
 class ShopCard extends StatelessWidget {
@@ -79,6 +80,11 @@ class ShopCard extends StatelessWidget {
                       child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
+                            Text(
+                                  item.number.toString(),
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(color: Colors.white),
+                              ),
                               Icon(
                                   item.icon,
                                   color: Colors.white,
